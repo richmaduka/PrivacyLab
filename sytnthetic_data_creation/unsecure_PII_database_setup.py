@@ -8,7 +8,7 @@ import mysql.connector
 import os
 import random
 import datetime
-from Fake_Credit_Card import Fake_Credit_Card
+from sytnthetic_data_creation.Fake_Credit_Card import Fake_Credit_Card
 from dotenv import load_dotenv
 
 #load enverioment (.env) file 
