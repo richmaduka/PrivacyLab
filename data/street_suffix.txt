@@ -1,0 +1,16 @@
+Ave
+Blvd
+Street
+Drive
+Crest
+Express Way
+Meadow
+Park Way
+Pike
+Square
+Station
+Summit
+Turn Pike
+Valley
+Well
+Building

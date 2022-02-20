@@ -1,0 +1,29 @@
+databases: 
+-
+  name: Health_DP
+  tables:
+  -
+    name: Customers
+    columns:
+      datapoints:
+        sex: true
+        first_name: true
+        last_name: true
+        race: true
+        dob: true
+        phone: true
+        email: true
+        password: false
+        ssn: false
+        address:
+          street: true
+          city: true
+          state: true
+          zipcode: true
+        credit_cards: true
+      encrypt: 
+        ssn: AES
+      hash:
+        password: SHA256
+  -
+        
