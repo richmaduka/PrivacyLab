@@ -7,28 +7,43 @@ from dateutil.parser import parse
 
 #type class definitions
 class NodeType(object):
-    pass
+    def __init__(self, value = None) -> None:
+        value = value
+
 
 class Address(NodeType):
-    pass
+    def __init__(self, value = None) -> None:
+        value = value
+
 
 class SSN(NodeType):
-    pass
+    def __init__(self, value = None) -> None:
+        value = value
+
 
 class Email_Address(NodeType):
-    pass
+    def __init__(self, value = None) -> None:
+        value = value
+
 
 class Phone_Number(NodeType):
-    pass
+    def __init__(self, value = None) -> None:
+        value = value
+
 
 class DateObj(NodeType):
-    pass
+    def __init__(self, value = None) -> None:
+        value = value
+
 
 class Sex(NodeType):
-    pass
+    def __init__(self, value = None) -> None:
+        value = value
 
-class credit_card(NodeType):
-    pass
+
+class CreditCard(NodeType):
+    def __init__(self, value = None) -> None:
+        value = value
 
 
 '''
@@ -46,6 +61,7 @@ def isEmail(data: any) -> bool:
     if(re.fullmatch(regex, data)):
         return True
 
+
 def isPhoneNumber(data: any) ->bool:
     '''
     1) Begins with 0 or 91
@@ -55,7 +71,11 @@ def isPhoneNumber(data: any) ->bool:
     length = len(data)
     Pattern = re.compile("(0|91)?[7-9][0-9]{9}")
 
+
 def isAddress(data: any) -> bool:
+    '''
+    Check if the data is an address using regex
+    '''
     if re.match(r"(^[0-9]{1,5}\s)([A-Za-z]{1,}(\#\s|\s\#|\s\#\s|\s)){1,5}([A-Za-z]{1,}\,|[0-9]{1,}\,)(\s[a-zA-Z]{1,}\,|[a-zA-Z]{1,}\,)(\s[a-zA-Z]{2}\s|[a-zA-Z]{2}\s)([0-9]{5})"):
         return True
     elif re.match(r"(^[0-9]{1,5}\s)([A-Za-z]{1,}(\#\s|\s\#|\s\#\s|\s)){1,5}([A-Za-z]{1,}\,|[0-9]{1,}\,)(\s[a-zA-Z]{1,}\,|[a-zA-Z]{1,}\,)(\s[a-zA-Z]{2}\s|[a-zA-Z]{2,}\s)([0-9]{5})"):
@@ -63,12 +83,17 @@ def isAddress(data: any) -> bool:
 
 
 def isSSN(data: any) -> bool:
-    #checking validity of ssn with regex 
-    if re.match(r"^(?!000|666)[0-8][0-9]{2}-(?!00)[0-9]{2}-(?!0000)[0-9]{4}$", sys.argv[1]):
+    '''
+    check if the object is an SSN
+    '''
+    if re.match(r"^(?!000|666)[0-8][0-9]{2}-(?!00)[0-9]{2}-(?!0000)[0-9]{4}$"):
         return True
 
+
 def isSex(data: any) -> bool:
-    #check if it is a valid sex
+    '''
+    Check if it is a valid sex.
+    '''
     sexes = ["female", "male"]
     if data == 'M' or data == 'F':
         return True
@@ -94,5 +119,21 @@ def isDateObj(data: any) -> bool:
 def isCreditCard(data: any) -> bool:
     pass
 
+
 def typeOfNode(data: any) -> NodeType:
-    pass
+    # Test data for type
+    if isEmail(data):
+        return Email_Address(value=data)
+    elif isPhoneNumber(data):
+        return Phone_Number(value=data)
+    elif isCreditCard(value=data):
+        return CreditCard(value=data)
+    elif isAddress(data):
+        return Address(value=data)
+    elif isDateObj(data):
+        return DateObj(value=data)
+    elif isSex(data):
+        return Sex(value=data)
+    elif isSSN(data):
+        return SSN(value=data)
+

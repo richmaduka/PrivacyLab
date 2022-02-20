@@ -19,18 +19,21 @@ load_dotenv()
 lastnames = open('data/lastnames.txt').read().splitlines()
 namesF = open('data/namesF.txt').read().splitlines()
 namesM = open('data/namesM.txt').read().splitlines()
-email_provider = ["gmail.com", "gmail.com", "outlook.com", "icloud.com", "yahoo.com", "gmail.com"]
+email_provider = ["gmail.com", "gmail.com", "outlook.com", 
+                    "icloud.com", "yahoo.com", "gmail.com"]
 races = ["asian", "black","hispanic", "white", "other"]
 streets = open('data/streets.txt').read().splitlines()
 street_suffix = open('data/street_suffix.txt').read().splitlines()
 state_zip_codes = open('data/state_zip_codes.csv').read().splitlines()
 cities = open('data/cities.csv').read().splitlines()
 random_credit_card = Fake_Credit_Card()
-card_types = ["mastercard", "mastercard", "visa", "amex", "visa","discover", "mastercard", "diners", "jcb", "enroute", "voyoger"]
+card_types = ["mastercard", "mastercard", "visa",
+                "amex", "visa","discover", "mastercard", 
+                "diners", "jcb", "enroute", "voyoger"]
 
 #map state to zipcodes in a dict
 zipcode_dict = {}
-
+#iterate through states and map zipcode ranges in dict
 for state_zip in state_zip_codes:
     split = state_zip.split(",")
     zipcode_dict[split[1]] = split[3]
@@ -96,13 +99,11 @@ def create_address():
     return street, city, state, zipcode
 
 
-
 def create_phone_number():
     try:
         phone = "("
         # the first number should be in the range of 6 to 9
         phone += str(random.randint(6, 9))
-        
         # the for loop is used to append the other 9 numbers.
         # the other 9 numbers can be in the range of 0 to 9.
         for digit in range(1, 10):
