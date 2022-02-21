@@ -10,7 +10,7 @@ import random
 import datetime
 from sytnthetic_data_creation.Fake_Credit_Card import Fake_Credit_Card
 from dotenv import load_dotenv
-import Databases.database_connect
+import databases.database_connect
 
 #load enverioment (.env) file 
 env_path=os.path.join(".env", "./")
@@ -134,9 +134,11 @@ def generate_PII_dataset(credentials: dict = None, table_name="Customers", n : i
     '''
     Generates synthetic personal identifiable information
     '''
+
     buffer = []  
-    mydb = Databases.database_connect.sql_connection(credentials=credentials)
+    mydb = databases.database_connect.sql_connection(credentials=credentials)
     mycursor = mydb.cursor()
+
     query = """CREATE TABLE IF NOT EXISTS """+table_name+""" (id INT AUTO_INCREMENT PRIMARY KEY, first_name VARCHAR(255), last_name VARCHAR(255),
     sex VARCHAR(1), hispanic or latino INT, race VARCHAR(15), dob VARCHAR(30),ssn VARCHAR(9), phone VARCHAR(16), email VARCHAR(255), street VARCHAR(400), city VARCHAR(40), state VARCHAR(30), zipcode VARCHAR(6),
     cc_type VARCHAR(30), cc_number VARCHAR(16), cvv VARCHAR(4), cc_expires VARCHAR(5))"""
