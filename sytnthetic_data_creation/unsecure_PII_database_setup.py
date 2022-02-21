@@ -10,6 +10,7 @@ import random
 import datetime
 from sytnthetic_data_creation.Fake_Credit_Card import Fake_Credit_Card
 from dotenv import load_dotenv
+import Databases.database_connect
 
 #load enverioment (.env) file 
 env_path=os.path.join(".env", "./")
@@ -128,20 +129,18 @@ def create_dob():
     dob = start_date + datetime.timedelta(days=random_number_of_days)
     return dob
 
-def generate_PII_dataset(db = "Health_DP", table="Customers", n : int = 300):
-    buffer = []
-    mydb = mysql.connector.connect(
-        host=os.getenv("SQL_HOST"),
-        port=os.getenv("SQL_PORT"),
-        user=os.getenv("SQL_USER"),
-        password=os.getenv("SQL_PASSWORD"),
-        database=db
-        )
-    mycursor = mydb.cursor()
-    query = """CREATE TABLE IF NOT EXISTS Customers (id INT AUTO_INCREMENT PRIMARY KEY, first_name VARCHAR(255), last_name VARCHAR(255),
-    sex VARCHAR(1), dob VARCHAR(30), race VARCHAR(15),ssn VARCHAR(9), phone VARCHAR(16), email VARCHAR(255), street VARCHAR(400), city VARCHAR(40), state VARCHAR(30), zipcode VARCHAR(6),
-    cc_type VARCHAR(30), cc_number VARCHAR(16), cvv VARCHAR(4), cc_expires VARCHAR(5))"""
 
+def generate_PII_dataset(credentials: dict = None, table_name="Customers", n : int = 300):
+    '''
+    Generates synthetic personal identifiable information
+    '''
+    buffer = []  
+    mydb = Databases.database_connect.sql_connection(credentials=credentials)
+    mycursor = mydb.cursor()
+    query = """CREATE TABLE IF NOT EXISTS """+table_name+""" (id INT AUTO_INCREMENT PRIMARY KEY, first_name VARCHAR(255), last_name VARCHAR(255),
+    sex VARCHAR(1), hispanic or latino INT, race VARCHAR(15), dob VARCHAR(30),ssn VARCHAR(9), phone VARCHAR(16), email VARCHAR(255), street VARCHAR(400), city VARCHAR(40), state VARCHAR(30), zipcode VARCHAR(6),
+    cc_type VARCHAR(30), cc_number VARCHAR(16), cvv VARCHAR(4), cc_expires VARCHAR(5))"""
+    
     mycursor.execute(query)
     counter = 0
 
@@ -162,6 +161,8 @@ def generate_PII_dataset(db = "Health_DP", table="Customers", n : int = 300):
             last_name = random.choice(lastnames)
 
             #assign race
+            isHispanic = random.choice([0,0,1])
+
             race = random.choice(races)
 
             #generate random SSN
@@ -191,9 +192,12 @@ def generate_PII_dataset(db = "Health_DP", table="Customers", n : int = 300):
             continue
             
         if counter != n-1 and len(buffer) < 15:
-            buffer.append([first_name,last_name, sex, race, dob, ssn, phone, email, street, city, state, zipcode, cc_type, cc_number, cvv, cc_expires])
+            buffer.append([first_name,last_name, sex, 
+                            isHispanic, race, dob, ssn, phone, 
+                            email, street, city, state, zipcode,
+                            cc_type, cc_number, cvv, cc_expires])
         else:
-            sql = """INSERT INTO Customers (first_name, last_name, sex, dob, race, ssn, phone, email, street, city, state, zipcode, cc_type, cc_number, cvv, cc_expires) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s,%s)"""
+            sql = """INSERT INTO Customers (first_name, last_name, sex, isHispanic, dob, race, ssn, phone, email, street, city, state, zipcode, cc_type, cc_number, cvv, cc_expires) VALUES (%s, %s, %s,  %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s,%s)"""
             mycursor.executemany(sql, buffer)
             buffer = []
         counter +=1  
