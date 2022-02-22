@@ -1,5 +1,5 @@
 # PrivacyLab
-## An online Lab enviroment for privacy engineering. (in Develoment stage)
+## An online lab enviroment for privacy engineering. (in develoment stage)
 
 ### Features:
 - Create unlimited synthetic PII datasets using the database creation tool.
