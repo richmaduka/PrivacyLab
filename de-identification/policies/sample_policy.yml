@@ -1,10 +1,8 @@
 # Deidentification rules - Safe Habor
 
 database:
-  -
   name: Health_DP
-  exclude:
-    method: blur
+  policy:
     keys:
       password: blur
       last_name: none
@@ -14,5 +12,5 @@ database:
       cvv: none
       cc_expires: blur
     types:
-      Email_Address: show first 4 and show provider
+      Email_Address: show first 2 characters and show provider
       Phone_Number: show last 4 digits
