@@ -101,14 +101,14 @@ def create_address():
 
 def create_phone_number():
     try:
-        phone = "("
+        phone = ""
         # the first number should be in the range of 6 to 9
         phone += str(random.randint(6, 9))
         # the for loop is used to append the other 9 numbers.
         # the other 9 numbers can be in the range of 0 to 9.
         for digit in range(1, 10):
             if digit == 3:
-                phone += ') '
+                phone += '-'
             if digit == 6:
                 phone += '-'
             phone += str(random.randint(0, 9))
@@ -139,7 +139,7 @@ def generate_PII_dataset(credentials: dict = None, table_name="Customers", n: in
     mycursor = mydb.cursor()
 
     query = """CREATE TABLE IF NOT EXISTS """+table_name+""" (id INT AUTO_INCREMENT PRIMARY KEY, first_name VARCHAR(255), last_name VARCHAR(255),
-    sex VARCHAR(1), isHispanic INT, race VARCHAR(15), dob VARCHAR(30),ssn VARCHAR(9), phone VARCHAR(16), email VARCHAR(255), street VARCHAR(400), city VARCHAR(40), state VARCHAR(30), zipcode VARCHAR(6),
+    sex VARCHAR(1), isHispanic INT, race VARCHAR(15), dob VARCHAR(30),ssn VARCHAR(11), phone VARCHAR(16), email VARCHAR(255), street VARCHAR(400), city VARCHAR(40), state VARCHAR(30), zipcode VARCHAR(6),
     cc_type VARCHAR(30), cc_number VARCHAR(16), cvv VARCHAR(4), cc_expires VARCHAR(5))"""
 
     mycursor.execute(query)
@@ -167,7 +167,8 @@ def generate_PII_dataset(credentials: dict = None, table_name="Customers", n: in
             race = random.choice(races)
 
             # generate random SSN
-            ssn = str(random.randint(100000000, 999999999))
+            ssn = str(random.randint(111, 888))+"-" + \
+                str(random.randint(10, 99))+"-"+str(random.randint(1000, 9998))
 
             # assign dob
             dob = create_dob()
@@ -199,7 +200,7 @@ def generate_PII_dataset(credentials: dict = None, table_name="Customers", n: in
                            email, street, city, state, zipcode,
                            cc_type, cc_number, cvv, cc_expires])
         else:
-            sql = """INSERT INTO Customers (first_name, last_name, sex, isHispanic, dob, race, ssn, phone, email, street, city, state, zipcode, cc_type, cc_number, cvv, cc_expires) VALUES (%s, %s, %s,  %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s,%s)"""
+            sql = """INSERT INTO Customers (first_name, last_name, sex, isHispanic, race, dob, ssn, phone, email, street, city, state, zipcode, cc_type, cc_number, cvv, cc_expires) VALUES (%s, %s, %s,  %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s,%s)"""
             mycursor.executemany(sql, buffer)
             buffer = []
         counter += 1

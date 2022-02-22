@@ -1,0 +1,18 @@
+# Deidentification rules - Safe Habor
+
+database:
+  -
+  name: Health_DP
+  exclude:
+    method: blur
+    keys:
+      password: blur
+      last_name: none
+      ssn: show last 4 digits
+      dob: show year
+      cc_number: show last 4 digits
+      cvv: none
+      cc_expires: blur
+    types:
+      Email_Address: show first 4 and show provider
+      Phone_Number: show last 4 digits
