@@ -8,33 +8,34 @@ import mysql.connector
 import os
 import random
 import datetime
-from sytnthetic_data_creation.Fake_Credit_Card import Fake_Credit_Card
+import Fake_Credit_Card
 from dotenv import load_dotenv
-import databases.database_connect
+from Fake_Credit_Card import Fake_Credit_Card
+import database_connect
 
-#load enverioment (.env) file 
-env_path=os.path.join(".env", "./")
+# load enverioment (.env) file
+env_path = os.path.join(".env", "./")
 load_dotenv()
 
-#load generator files
+# load generator files
 lastnames = open('data/lastnames.txt').read().splitlines()
 namesF = open('data/namesF.txt').read().splitlines()
 namesM = open('data/namesM.txt').read().splitlines()
-email_provider = ["gmail.com", "gmail.com", "outlook.com", 
-                    "icloud.com", "yahoo.com", "gmail.com"]
-races = ["asian", "black","hispanic", "white", "other"]
+email_provider = ["gmail.com", "gmail.com", "outlook.com",
+                  "icloud.com", "yahoo.com", "gmail.com"]
+races = ["asian", "black", "hispanic", "white", "other"]
 streets = open('data/streets.txt').read().splitlines()
 street_suffix = open('data/street_suffix.txt').read().splitlines()
 state_zip_codes = open('data/state_zip_codes.csv').read().splitlines()
 cities = open('data/cities.csv').read().splitlines()
 random_credit_card = Fake_Credit_Card()
 card_types = ["mastercard", "mastercard", "visa",
-                "amex", "visa","discover", "mastercard", 
-                "diners", "jcb", "enroute", "voyoger"]
+              "amex", "visa", "discover", "mastercard",
+              "diners", "jcb", "enroute", "voyoger"]
 
-#map state to zipcodes in a dict
+# map state to zipcodes in a dict
 zipcode_dict = {}
-#iterate through states and map zipcode ranges in dict
+# iterate through states and map zipcode ranges in dict
 for state_zip in state_zip_codes:
     split = state_zip.split(",")
     zipcode_dict[split[1]] = split[3]
@@ -42,13 +43,8 @@ for state_zip in state_zip_codes:
 
 def create_sql_database(db_name="Health_DP"):
     try:
-        mydb = mysql.connector.connect(
-            host=os.getenv("SQL_HOST"),
-            port=os.getenv("SQL_PORT"),
-            user=os.getenv("SQL_USER"),
-            password=os.getenv("SQL_PASSWORD")
-            )
-        #execute sql CREATE command
+        mydb = database_connect.sql_connection()
+        # execute sql CREATE command
         mycursor = mydb.cursor()
         mycursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name}")
     except Exception as e:
@@ -56,26 +52,27 @@ def create_sql_database(db_name="Health_DP"):
         error(e)
 
 
-
-def create_email(first_name,last_name):
-    #generate random Email
+def create_email(first_name, last_name):
+    # generate random Email
     try:
         email = ""
-        em_fmt = random.randint(0,3) #email format
+        em_fmt = random.randint(0, 3)  # email format
 
-        #select format type for emaail
+        # select format type for emaail
         if em_fmt == 0:
-            email += first_name + '.' + last_name + str(random.randint(0, 1000))
+            email += first_name + '.' + last_name + \
+                str(random.randint(0, 1000))
         elif em_fmt == 1:
-            email += first_name[0] + last_name + str(random.randint(0,1000))
+            email += first_name[0] + last_name + str(random.randint(0, 1000))
         elif em_fmt == 2:
-            email += first_name + last_name[0] + str(random.randint(0,1000))
+            email += first_name + last_name[0] + str(random.randint(0, 1000))
         elif em_fmt == 3:
             email += first_name + last_name + str(random.randint(300, 700))
         elif em_fmt == 3:
             email += first_name + last_name + str(random.randint(300, 700))
-        
-        email += "@" + email_provider[random.randint(0, len(email_provider) - 1)]
+
+        email += "@" + \
+            email_provider[random.randint(0, len(email_provider) - 1)]
     except Exception as e:
         error("An error occurred while generating email address.")
     return email
@@ -83,17 +80,19 @@ def create_email(first_name,last_name):
 
 def create_address():
     try:
-        #generate random Street
-        street = str(random.randint(1,9999)) + " "+random.choice(streets).title() +" "+ random.choice(street_suffix)
+        # generate random Street
+        street = str(random.randint(1, 9999)) + " " + \
+            random.choice(streets).title() + " " + random.choice(street_suffix)
         city_and_state = random.choice(cities).split(",")
         city = city_and_state[0]
         state = city_and_state[1]
         zipcode_range = zipcode_dict[state].split("to")
-        zipcode = str(random.randint(int(zipcode_range[0]), int(zipcode_range[1])))
+        zipcode = str(random.randint(
+            int(zipcode_range[0]), int(zipcode_range[1])))
 
-        #check if zipcode is less than 5
+        # check if zipcode is less than 5
         if len(zipcode) < 5:
-            zipcode = "0"+zipcode 
+            zipcode = "0"+zipcode
     except Exception as e:
         error("An error occured while creating an address.")
         error(e)
@@ -120,7 +119,7 @@ def create_phone_number():
 
 
 def create_dob():
-    #generate random date of birth
+    # generate random date of birth
     start_date = datetime.date(1933, 1, 1)
     end_date = datetime.date(2013, 2, 1)
     time_between_dates = end_date - start_date
@@ -130,83 +129,85 @@ def create_dob():
     return dob
 
 
-def generate_PII_dataset(credentials: dict = None, table_name="Customers", n : int = 300):
+def generate_PII_dataset(credentials: dict = None, table_name="Customers", n: int = 300):
     '''
     Generates synthetic personal identifiable information
     '''
 
-    buffer = []  
-    mydb = databases.database_connect.sql_connection(credentials=credentials)
+    buffer = []
+    mydb = database_connect.sql_connection()
     mycursor = mydb.cursor()
 
     query = """CREATE TABLE IF NOT EXISTS """+table_name+""" (id INT AUTO_INCREMENT PRIMARY KEY, first_name VARCHAR(255), last_name VARCHAR(255),
-    sex VARCHAR(1), hispanic or latino INT, race VARCHAR(15), dob VARCHAR(30),ssn VARCHAR(9), phone VARCHAR(16), email VARCHAR(255), street VARCHAR(400), city VARCHAR(40), state VARCHAR(30), zipcode VARCHAR(6),
+    sex VARCHAR(1), isHispanic INT, race VARCHAR(15), dob VARCHAR(30),ssn VARCHAR(9), phone VARCHAR(16), email VARCHAR(255), street VARCHAR(400), city VARCHAR(40), state VARCHAR(30), zipcode VARCHAR(6),
     cc_type VARCHAR(30), cc_number VARCHAR(16), cvv VARCHAR(4), cc_expires VARCHAR(5))"""
-    
+
     mycursor.execute(query)
     counter = 0
 
     while counter < n:
         try:
-            #choose random sex
-            sex_v = random.randint(0,1)
+            # choose random sex
+            sex_v = random.randint(0, 1)
 
-            #choose random firstname from list
+            # choose random firstname from list
             if sex_v == 0:
                 sex = 'F'
-                first_name =random.choice(namesF)
+                first_name = random.choice(namesF)
             else:
                 sex = 'M'
                 first_name = random.choice(namesM)
 
-            #choose random lastname from list
+            # choose random lastname from list
             last_name = random.choice(lastnames)
 
-            #assign race
-            isHispanic = random.choice([0,0,1])
+            # assign race
+            isHispanic = random.choice([0, 0, 1])
 
             race = random.choice(races)
 
-            #generate random SSN
+            # generate random SSN
             ssn = str(random.randint(100000000, 999999999))
 
-            #assign dob
+            # assign dob
             dob = create_dob()
 
-            #generate random Phone
+            # generate random Phone
             phone = create_phone_number()
 
-            #create email from name
+            # create email from name
             email = create_email(first_name=first_name, last_name=last_name)
 
-            #generate random address, retruns a street, city, state and Zipcode
+            # generate random address, retruns a street, city, state and Zipcode
             street, city, state, zipcode = create_address()
 
-            #increment counter
-            counter+=1   
+            # increment counter
+            counter += 1
 
-            cc_type, cc_number, cvv, cc_expires = random_credit_card.credit_card_number(random.choice(card_types), 16)
+            cc_type, cc_number, cvv, cc_expires = random_credit_card.credit_card_number(
+                random.choice(card_types), 16)
         except Exception as e:
-            #catch exception
+            # catch exception
             error("An error occured while generating PII data set.")
             error('e')
-            n+=1
+            n += 1
             continue
-            
+
         if counter != n-1 and len(buffer) < 15:
-            buffer.append([first_name,last_name, sex, 
-                            isHispanic, race, dob, ssn, phone, 
-                            email, street, city, state, zipcode,
-                            cc_type, cc_number, cvv, cc_expires])
+            buffer.append([first_name, last_name, sex,
+                           isHispanic, race, dob, ssn, phone,
+                           email, street, city, state, zipcode,
+                           cc_type, cc_number, cvv, cc_expires])
         else:
             sql = """INSERT INTO Customers (first_name, last_name, sex, isHispanic, dob, race, ssn, phone, email, street, city, state, zipcode, cc_type, cc_number, cvv, cc_expires) VALUES (%s, %s, %s,  %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s,%s)"""
             mycursor.executemany(sql, buffer)
             buffer = []
-        counter +=1  
+        counter += 1
     mydb.commit()
+
 
 if __name__ == "__main__":
     print(os.getenv("SQL_HOST"))
     print(os.getenv("SQL_PORT"))
-    #sql_db_generator()
+    create_sql_database(db_name="Health_DP")
     generate_PII_dataset()
